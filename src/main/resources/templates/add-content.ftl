@@ -285,7 +285,7 @@
                             <div class="form-group row">
                                 <label class="col-sm-2 form-control-label text-xs-right"> 播放次数: </label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control boxed" placeholder="" name="viewCount" value="${content.viewCount}">
+                                    <input type="text" class="form-control boxed" placeholder="" name="viewCount" value="${content.viewCount?c}">
                                 </div>
                             </div>
 
@@ -425,7 +425,7 @@
                                             <script type="text/plain" id="upload_ue"></script>
                                             <input  name="image" id="image" value="${content.image}"/>
                                             <a href="javascript:void(0);" onclick="upImage();">上传图片</a>
-                                            <div class="image" id="preview" style="background-image:url('${content.image}')"></div>
+                                            <div class="image" id="preview" style="${content.image!?contains("/")?string("","display:none")};float:left;background-image:url('${content.image}')"></div>
 
                                             <a onclick="upImage();" class="add-image">
                                                 <div class="image-container new">
@@ -626,6 +626,7 @@
                         //将地址赋值给相应的input,只去第一张图片的路径
                         $("#image").attr("value", arg[0].src);
                         //图片预览
+                        $("#preview").show();
                         $("#preview").attr("style", "background-image:url("+arg[0].src+")");
                     })
                     //侦听文件上传，取上传文件列表中第一个上传的文件的路径

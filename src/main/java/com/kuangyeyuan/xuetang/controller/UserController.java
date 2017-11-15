@@ -164,9 +164,13 @@ public class UserController {
         LinkedList<ContentEntity> contentEntities = new LinkedList<>();
 
         for (String id : history.getHistoryIds().split("\\|")) {
-            ContentEntity contentEntity = contentRepository.getOne(Integer.parseInt(id));
-            if(contentEntity != null) {
-                contentEntities.addFirst(contentEntity);
+            try {
+                ContentEntity contentEntity = contentRepository.getOne(Integer.parseInt(id));
+                if (contentEntity != null) {
+                    contentEntities.addFirst(contentEntity);
+                }
+            }catch (Exception e){
+//                e.printStackTrace();
             }
         }
 
@@ -178,8 +182,12 @@ public class UserController {
         firstCourceTitle.add(templateDataBean1);
 
         for (ContentEntity contentEntity : contentEntities) {
-            TemplateDataBean templateDataBean = ControllerUtils.getTemplateDataBean(contentEntity);
-            firstCourceList.add(templateDataBean);
+            try{
+                TemplateDataBean templateDataBean = ControllerUtils.getTemplateDataBean(contentEntity);
+                firstCourceList.add(templateDataBean);
+            }catch (Exception e){
+    //                e.printStackTrace();
+            }
         }
 
         LinkedList<DataBean> dataBeanLinkedList = new LinkedList<DataBean>();
@@ -210,8 +218,12 @@ public class UserController {
         firstCourceTitle.add(templateDataBean1);
 
         for (ContentEntity contentEntity : contentEntities) {
-            TemplateDataBean templateDataBean = ControllerUtils.getTemplateDataBean(contentEntity);
-            firstCourceList.add(templateDataBean);
+            try {
+                TemplateDataBean templateDataBean = ControllerUtils.getTemplateDataBean(contentEntity);
+                firstCourceList.add(templateDataBean);
+            }catch (Exception e){
+
+            }
         }
 
         LinkedList<DataBean> dataBeanLinkedList = new LinkedList<DataBean>();

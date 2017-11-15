@@ -27,8 +27,10 @@ public class ControllerUtils {
 
         templateDataBean.setTag(contentEntity.getPrice()>0?"¥"+contentEntity.getPrice():"免费");
         templateDataBean.setArticle(contentEntity.getType().equals("article"));
+        templateDataBean.setViewCount(contentEntity.getViewCount());
         templateDataBean.setPrice(contentEntity.getPrice());
         templateDataBean.setVideoId(contentEntity.getId());
+        templateDataBean.setAuthor(contentEntity.getAuthor());
         templateDataBean.setName(contentEntity.getTitle());
         templateDataBean.setPicUrl(contentEntity.getImage());
         templateDataBean.setDesc(contentEntity.getContentDesc());

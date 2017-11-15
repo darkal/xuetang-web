@@ -22,6 +22,9 @@ public interface ContentRepository extends JpaRepository<ContentEntity,Integer> 
     @Query("select s,c from ContentEntity s,CateEntity c where s.cateId=c.id and s.id=?1 and s.deleted = false order by s.sequence")
     Object[] findOneWithCate(int id);
 
+    @Query(value = "select * from content_entity s where s.deleted = false and MATCH (title,author,content) AGAINST (?1)",nativeQuery = true)
+    List<ContentEntity> searchContent(String keyword);
+
     @Query("select s,c from ContentEntity s,CateEntity c where s.cateId=c.id and s.deleted = false order by s.createTime")
     List<Object> findAllByTimeWithCate();
 
@@ -47,6 +50,7 @@ public interface ContentRepository extends JpaRepository<ContentEntity,Integer> 
 
     @Transactional
     @Modifying
+    @Override
     @Query("update ContentEntity s set deleted=true where s.id=?1")
-    void deleteById(Integer id);
+    void delete(Integer id);
 }

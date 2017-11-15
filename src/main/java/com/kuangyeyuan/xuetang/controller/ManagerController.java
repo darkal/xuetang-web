@@ -39,6 +39,12 @@ public class ManagerController {
         return "list";
     }
 
+    @RequestMapping("/catelist.do")
+    public String initCateIndex(Model model) {
+        model.addAttribute("contentList", cateRepository.findAll());
+        return "catelist";
+    }
+
     @ResponseBody
     @RequestMapping("/deleteItem.do")
     public String deleteItem(Model model,String id) {
@@ -57,6 +63,13 @@ public class ManagerController {
     public String deleteComment(Model model,String id) {
         commentRepository.delete(Integer.parseInt(id));
         return "comment";
+    }
+
+    @ResponseBody
+    @RequestMapping("/deleteCate.do")
+    public String deleteCate(Model model,String id) {
+        cateRepository.delete(Integer.parseInt(id));
+        return "cate";
     }
 
     @ResponseBody
@@ -99,11 +112,27 @@ public class ManagerController {
         return "add-content";
     }
 
+    @RequestMapping("/cate.do")
+    public String addCateContent(Model model,String id) {
+        if(id == null ||id.isEmpty()){
+            model.addAttribute("content",new CateEntity());
+        }else{
+            model.addAttribute("content",cateRepository.findOne(Integer.parseInt(id)));
+        }
+        return "cate";
+    }
+
     @PostMapping("/content.do")
     public String contentSubmit(@ModelAttribute ContentEntity contentEntity) {
         contentEntity.setCreateTime(System.currentTimeMillis());
         contentRepository.save(contentEntity);
         return "redirect:/list.do";
+    }
+
+    @PostMapping("/cate.do")
+    public String cateSubmit(@ModelAttribute CateEntity cateEntity) {
+        cateRepository.save(cateEntity);
+        return "redirect:/catelist.do";
     }
 
     @RequestMapping("/addCate.do")

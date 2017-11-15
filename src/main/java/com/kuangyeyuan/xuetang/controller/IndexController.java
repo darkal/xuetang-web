@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,6 +52,15 @@ public class IndexController {
 
     @Autowired
     UserController userController;
+
+    @Autowired
+    HotSearchKeywordRepository hotSearchKeywordRepository;
+
+    @Autowired
+    SearchReportRepository searchReportRepository;
+
+    @Autowired
+    TopSearchRepository topSearchRepository;
 
     @RequestMapping("/Datas/tab1.json")
     @ResponseBody
@@ -97,7 +107,7 @@ public class IndexController {
         dataBeanLinkedList.add(TemplateFactory.getDataBean(DataBeanType.roundAvatorText, iconLinkList));
         dataBeanLinkedList.add(TemplateFactory.getDataBean(DataBeanType.textRollLink, textRollLinkList));
 
-        for (CateEntity cateEntity : cateRepository.findAllByType("course")) {
+        for (CateEntity cateEntity : cateRepository.findAllIndex()) {
             if(cateEntity.getDisplay() == 0){
                 continue;
             }
@@ -128,7 +138,8 @@ public class IndexController {
                 TemplateDataBean templateDataBean = ControllerUtils.getTemplateDataBean(contentEntity);
 
                 if (contentEntity.getCateId() == cateEntity.getId()) {
-                    if(versionCode == 1 && cateEntity.getIsLarge() == 1 && courseLargeList.size() == 0){
+                    if((versionCode == 1 && cateEntity.getIsLarge() == 1 && courseLargeList.size() == 0)
+                            || cateEntity.getType().equals("single")){
                         courseLargeList.add(templateDataBean);
                     }else if(courseList.size() < 6){
                         courseList.add(templateDataBean);
@@ -234,16 +245,73 @@ public class IndexController {
         return TemplateFactory.getRespBean(dataBeanLinkedList);
     }
 
+    @RequestMapping("/Datas/search.json")
+    @ResponseBody
+    public RespBean getSearchList(String keyword,String session) {
+        LinkedList<ContentEntity> contentEntities = new LinkedList<>();
+
+        try{
+            String openid=sessionRepository.findOpenId(session);
+            SearchReport searchReport = new SearchReport();
+            searchReport.setOpenId(openid);
+            searchReport.setText(keyword);
+            searchReport.setTime(System.currentTimeMillis());
+            searchReportRepository.save(searchReport);
+
+
+            TopSearch topSearch = topSearchRepository.findByText(keyword);
+
+            if(topSearch!=null){
+                topSearchRepository.addViewCount(topSearch.getId());
+            }else{
+                topSearch = new TopSearch();
+                topSearch.setText(keyword);
+                topSearch.setCount(1);
+                topSearchRepository.save(topSearch);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        contentEntities.addAll(contentRepository.searchContent(keyword));
+
+        LinkedList<TemplateDataBean> tempDataList = new LinkedList<TemplateDataBean>();
+        for (ContentEntity contentEntity : contentEntities) {
+            if(!contentEntity.getType().equals("list")){
+                TemplateDataBean templateDataBean = ControllerUtils.getTemplateDataBean(contentEntity);
+                tempDataList.add(templateDataBean);
+            }
+        }
+
+        LinkedList<DataBean> dataBeanLinkedList = new LinkedList<DataBean>();
+        dataBeanLinkedList.add(TemplateFactory.getDataBean(DataBeanType.normalLandScape, tempDataList));
+
+        return TemplateFactory.getRespBean(dataBeanLinkedList);
+    }
+
+    @RequestMapping("/Datas/keyword.json")
+    @ResponseBody
+    public List<String> getHotSearchKeyword(String session) {
+        List<String> result = new ArrayList<>();
+        for(HotSearchKeyword hotSearchKeyword : hotSearchKeywordRepository.findAll()){
+            result.add(hotSearchKeyword.getText());
+        }
+
+        return result;
+    }
+
     @RequestMapping("/Datas/video.json")
     @ResponseBody
     public VideoBean video(String id, String session,String type) {
         VideoBean videoBean = new VideoBean();
         try {
+            ContentEntity contentEntity = contentRepository.findOne(Integer.parseInt(id));
+
             if(type == null || !type.equals("ajax")) {
                 userController.addSingleHistory(session, id);
                 contentRepository.addViewCount(Integer.parseInt(id));
             }
-            ContentEntity contentEntity = contentRepository.findOne(Integer.parseInt(id));
 
             Boolean isPay = false;
             if (contentEntity.getPrice() > 0) {
@@ -272,7 +340,7 @@ public class IndexController {
 
                 String videoUrl = contentEntity.getVideoUrl();
                 if(!videoUrl.contains("http") && videoUrl.contains("0_")){
-                    dataBean.setVideoURL("http://video.darkal.cn//p/104/sp/10400/playManifest/entryId/"+videoUrl+
+                    dataBean.setVideoURL("http://video.darkal.cn//p/103/sp/10300/playManifest/entryId/"+videoUrl+
                             "/format/applehttp/protocol/http/video.m3u8");
                 }else {
                     dataBean.setVideoURL(contentEntity.getVideoUrl());
@@ -281,7 +349,13 @@ public class IndexController {
                 dataBean.setVideoURL("http://push.darkal.cn/pre/pre.m3u8");
                 videoBean.setTips(contentEntity.getTips());
             }
-            dataBean.setContent(contentEntity.getContent());
+
+            String lawTip = "<p style=\"white-space: normal;\">\n" +
+                    "    <span style=\"color: rgb(89, 89, 89);\"><span style=\"font-size: 14px;\"><strong>法律声明</strong></span><br/><span style=\"font-size: 14px;\">1、本视频仅供个人学习、研究或者欣赏使用，未经授权不得转载或者其他商业用途。<br/>2、本视频为相关会议的公开学术报告，若您对刊登、播放有异议，请来电或致函告之，我们将在规定时间内妥善处理。</span></span>\n" +
+                    "</p>";
+
+            dataBean.setContent(contentEntity.getContent()+lawTip);
+
             dataBean.setCommentCount(commentRepository.findAllCommentNum(Integer.parseInt(id)));
 
             videoBean.setData(dataBean);

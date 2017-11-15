@@ -401,7 +401,9 @@
                                                             </a>
                                                         </li>
                                                         <li>
-                                                            <a class="edit" onclick="$.get('topComment.do?id=${item.id}')">
+                                                            <a class="edit" onclick="$.get('topComment.do?id=${item.id}',function() {
+                                                                        window.location.reload();
+                                                                    })">
                                                                 <i class="fa fa-upload"></i>
                                                             </a>
                                                         </li>

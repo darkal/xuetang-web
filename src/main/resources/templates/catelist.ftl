@@ -257,19 +257,8 @@
                         <div class="title-block">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <h3 class="title"> Items
-                                        <a href="content.do" class="btn btn-primary btn-sm rounded-s"> Add New </a>
-                                        <!--
-				 -->
-                                        <div class="action dropdown">
-                                            <button class="btn  btn-sm rounded-s btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> More actions... </button>
-                                            <div class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                                <a class="dropdown-item" href="#">
-                                                    <i class="fa fa-pencil-square-o icon"></i>Mark as a draft</a>
-                                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#confirm-modal">
-                                                    <i class="fa fa-close icon"></i>Delete</a>
-                                            </div>
-                                        </div>
+                                    <h3 class="title"> 分类管理
+                                        <a href="cate.do" class="btn btn-primary btn-sm rounded-s"> 新建 </a>
                                     </h3>
                                     <p class="title-description"> List of sample items - e.g. books, movies, events, etc... </p>
                                 </div>
@@ -310,22 +299,17 @@
                                     </div>
                                     <div class="item-col item-col-header item-col-sales">
                                         <div>
-                                            <span>点击数</span>
+                                            <span>类别</span>
                                         </div>
                                     </div>
                                     <div class="item-col item-col-header item-col-category">
                                         <div class="no-overflow">
-                                            <span>分类</span>
+                                            <span>展示大图</span>
                                         </div>
                                     </div>
                                     <div class="item-col item-col-header item-col-author">
                                         <div class="no-overflow">
-                                            <span>作者</span>
-                                        </div>
-                                    </div>
-                                    <div class="item-col item-col-header item-col-date">
-                                        <div>
-                                            <span>发布时间</span>
+                                            <span>是否展示</span>
                                         </div>
                                     </div>
                                     <div class="item-col item-col-header fixed item-col-actions-dropdown"> </div>
@@ -343,21 +327,21 @@
                                             </label>
                                         </div>
                                         <div class="item-col fixed item-col-img md">
-                                            <a href="content.do?id=${item[0].id}">
-                                                <div class="item-img rounded" style="background-image: url(${item[0].image})"></div>
+                                            <a href="cate.do?id=${item.id}">
+                                                <div class="item-img rounded" style="background-image: url(${item.bannerUrl})"></div>
                                             </a>
                                         </div>
                                         <div class="item-col fixed pull-left item-col-title">
                                             <div class="item-heading">标题</div>
                                             <div>
-                                                <a href="content.do?id=${item[0].id}" class="">
-                                                    <h4 class="item-title">${item[0].title}</h4>
+                                                <a href="cate.do?id=${item.id}" class="">
+                                                    <h4 class="item-title">${item.title}</h4>
                                                 </a>
                                             </div>
                                         </div>
                                         <div class="item-col item-col-sales">
-                                            <div class="item-heading">点击数</div>
-                                            <div> ${item[0].viewCount} </div>
+                                            <div class="item-heading">类别</div>
+                                            <div> ${item.type} </div>
                                         </div>
                                         <#--<div class="item-col item-col-stats no-overflow">-->
                                             <#--<div class="item-heading"></div>-->
@@ -366,20 +350,16 @@
                                             <#--</div>-->
                                         <#--</div>-->
                                         <div class="item-col item-col-category no-overflow">
-                                            <div class="item-heading">分类</div>
+                                            <div class="item-heading">展示大图</div>
                                             <div class="no-overflow">
-                                                <a href="">${item[1].title}</a>
+                                                <a href="">${item.isLarge}</a>
                                             </div>
                                         </div>
                                         <div class="item-col item-col-author">
-                                            <div class="item-heading">作者</div>
+                                            <div class="item-heading">是否展示</div>
                                             <div class="no-overflow">
-                                                <a href="">${item[0].author}</a>
+                                                <a href="">${item.display}</a>
                                             </div>
-                                        </div>
-                                        <div class="item-col item-col-date">
-                                            <div class="item-heading">发布时间</div>
-                                            <div class="no-overflow">${item[0].createTime?number_to_datetime} </div>
                                         </div>
                                         <div class="item-col fixed item-col-actions-dropdown">
                                             <div class="item-actions-dropdown">
@@ -395,12 +375,12 @@
                                                     <input id="deleteid" value="" style="display: none"/>
                                                     <ul class="item-actions-list">
                                                         <li>
-                                                            <a class="remove" onclick="$('#deleteid').val(${item[0].id})" data-toggle="modal" data-target="#confirm-modal">
+                                                            <a class="remove" onclick="$('#deleteid').val(${item.id})" data-toggle="modal" data-target="#confirm-modal">
                                                                 <i class="fa fa-trash-o "></i>
                                                             </a>
                                                         </li>
                                                         <li>
-                                                            <a class="edit" href="content.do?id=${item[0].id}">
+                                                            <a class="edit" href="cate.do?id=${item.id}">
                                                                 <i class="fa fa-pencil"></i>
                                                             </a>
                                                         </li>
@@ -536,7 +516,7 @@
         </div>
         <script>
             function deleteItem(){
-                $.get("deleteItem.do?id="+$('#deleteid').val(),function () {
+                $.get("deleteCate.do?id="+$('#deleteid').val(),function () {
                     window.location.reload();
                 });
             }

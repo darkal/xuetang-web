@@ -36,6 +36,7 @@ public class TemplateDataBean {
      */
 
     private String name;
+    private String author;
     private String jumpType;
     private int subjectId;
     private String picUrl;
@@ -59,6 +60,8 @@ public class TemplateDataBean {
     private int cid;
     private int rootId;
     private int isFormal;
+    private long viewCount;
+
     private Boolean isArticle;
     private int ended;
     private double price;
@@ -70,6 +73,14 @@ public class TemplateDataBean {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getJumpType() {
@@ -286,6 +297,14 @@ public class TemplateDataBean {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public long getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(long viewCount) {
+        this.viewCount = viewCount;
     }
 
     public static class UpdateListBean {
